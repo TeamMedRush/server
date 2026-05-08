@@ -1,0 +1,53 @@
+CWD=$(pwd)
+SCRIPTS_DIR="$CWD/scripts"
+chmod +x $SCRIPTS_DIR/*.sh
+chmod +x $CWD/*.sh
+source $CWD/config.sh
+
+__start_env() {
+  if [ -f ".venv/bin/activate" ]; then
+    source .venv/bin/activate
+  fi
+}
+
+__close_env() {
+  if [ -f ".venv/bin/activate" ]; then
+    if [ -n "$VIRTUAL_ENV" ]; then
+      deactivate
+    fi
+  fi
+}
+
+__guide() {
+  $SCRIPTS_DIR/help.sh $SCRIPTS_DIR $@
+}
+
+dev() {
+  if [ $# -eq 0 ]; then
+    __guide $@
+    return 0
+  fi
+
+  COMMAND=$1
+  shift
+
+  trap __close_env EXIT
+
+  if [ ! -f "$SCRIPTS_DIR/$COMMAND.sh" ]; then
+    echo "Unknown command: $COMMAND\n"
+    __guide $@
+    return 1
+  fi
+
+  COMMAND_HELP=$(echo "$COMMAND" | grep "^help$")
+  if [ -n "$COMMAND_HELP" ]; then
+    __guide $@
+    return $?
+  fi
+
+  __start_env
+
+  "$SCRIPTS_DIR/$COMMAND.sh" "$@"
+  return $?
+}
+

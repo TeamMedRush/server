@@ -1,0 +1,25 @@
+name: Format on PR Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.event.issue.pull_request != null && github.event.comment.body == '/ci format'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - name: Run format script
+        run: |
+          chmod +x ci/format/main.sh
+          bash ci/format/main.sh
+

@@ -1,0 +1,1 @@
+export DEV_APP="medrush_server"

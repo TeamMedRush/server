@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medrush_server"
+version = "0.1.0"
+description = "Backend server for Medrush, a platform for managing a hyperlocal quick commerce for medicines and healthcare products."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+authors = [
+  { name = "TeamMedRush" }
+]
+
+keywords = [
+  "medrush",
+  "server",
+  "backend",
+  "medicine",
+  "healthcare",
+  "quick commerce",
+  "hyperlocal",
+]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/TeamMedRush/medrush_server"
+Repository = "https://github.com/TeamMedRush/medrush_server"
+Issues = "https://github.com/TeamMedRush/medrush_server/issues"
+
+[project.scripts]
+medrush_server = "medrush_server.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["medrush_server*"]

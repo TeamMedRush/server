@@ -1,0 +1,40 @@
+name: AI Label Tagger
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened]
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  tagger:
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event_name == 'issues' ||
+      (github.event_name == 'issue_comment' && github.event.comment.body == '/ci tag')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || (github.event.issue.pull_request != null && format('refs/pull/{0}/head', github.event.issue.number)) || github.ref }}
+
+      - name: Run tagger script
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: ${{ secrets.AI_URL }}
+          TOKEN: ${{ secrets.AI_TOKEN }}
+          NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          REPO: ${{ github.repository }}
+          IS_PR: ${{ github.event_name == 'pull_request' || github.event.issue.pull_request != null }}
+        run: |
+          chmod +x ci/tagger/main.sh
+          bash ci/tagger/main.sh
+

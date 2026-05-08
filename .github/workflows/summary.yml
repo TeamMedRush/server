@@ -1,0 +1,31 @@
+name: PR Summary
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  summary:
+    if: github.event.issue.pull_request != null && github.event.comment.body == '/ci summary'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - name: Run summary script
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: ${{ secrets.AI_URL }}
+          TOKEN: ${{ secrets.AI_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          chmod +x ci/summary/main.sh
+          bash ci/summary/main.sh
+
