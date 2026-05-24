@@ -1,5 +1,5 @@
 from mrs.core.server import serve
-from mrs.route import load_routes
+from mrs.routes import load_routes
 
 def main():
   load_routes()

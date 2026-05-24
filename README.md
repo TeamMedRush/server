@@ -28,9 +28,32 @@ Medrush Server is the backend component of the Medrush platform, designed to han
 ## Project Structure
 
 ```tree
-medrush_server/
+mrs
 ├── __init__.py
-└── __main__.py
+├── __main__.py
+├── core
+│   ├── __init__.py
+│   └── server.py
+├── framework
+│   ├── __init__.py
+│   ├── analyser.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── request.py
+│   │   └── response.py
+│   ├── router.py
+│   └── server.py
+└── routes
+    ├── __init__.py
+    ├── api
+    │   ├── __init__.py
+    │   └── v1
+    │       ├── __init__.py
+    │       ├── agent.py
+    │       ├── partner.py
+    │       └── user.py
+    ├── home.py
+    └── static.py
 ```
 
 ## Links
