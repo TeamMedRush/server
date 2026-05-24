@@ -1,1 +1,1 @@
-export DEV_APP="medrush_server"
+export DEV_APP="mrs"

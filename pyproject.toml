@@ -37,8 +37,8 @@ Repository = "https://github.com/TeamMedRush/medrush_server"
 Issues = "https://github.com/TeamMedRush/medrush_server/issues"
 
 [project.scripts]
-medrush_server = "medrush_server.__main__:main"
+medrush_server = "mrs.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["medrush_server*"]
+include = ["mrs*"]
