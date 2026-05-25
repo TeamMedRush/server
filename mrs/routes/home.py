@@ -5,9 +5,7 @@ from mrs.framework.router import Router
 @Router.endpoint("/")
 async def get_home(_: Request) -> Response:
   response = Response()
-  response.status(200)
-  response.content_type("text/plain")
-  response.body(b"Hello, MedRush Server!")
+  response.text(200, "Hello, MedRush Server!")
 
   return response
 

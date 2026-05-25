@@ -15,4 +15,5 @@ class Request:
     self.headers = headers
     self.body = body
     self.path_params = {}
+    self.meta = {}
 

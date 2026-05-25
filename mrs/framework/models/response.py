@@ -1,3 +1,5 @@
+from json import dumps
+
 from langex.core.classes import langex_class
 from langex.core.functions import autosig
 
@@ -41,4 +43,20 @@ class Response:
       connection.encode(),
       body
     ])
+
+  @autosig
+  def text(self, status_code: int, text: str):
+    self.status(status_code)
+    self.body(text.encode())
+    self.content_type("text/plain")
+
+    return self
+
+  @autosig
+  def json(self, status_code: int, data: dict):
+    self.status(status_code)
+    self.body(dumps(data).encode())
+    self.content_type("application/json")
+
+    return self
 

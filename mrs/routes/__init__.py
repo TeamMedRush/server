@@ -22,5 +22,5 @@ def load_routes():
   for file in import_set:
     relative_path = file.replace(base_dir + "/", "")
     module_name = relative_path.replace("/", ".").replace(".py", "")
-    __import__(f"mrs.route.{module_name}")
+    __import__(f"mrs.routes.{module_name}")
 
