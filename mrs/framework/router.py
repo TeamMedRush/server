@@ -49,19 +49,27 @@ class _EndpointManager:
   def __init__(self):
     self.endpoints = []
 
-  def add(self, path: str, handler):
-    self.endpoints.append((path, handler))
+  def add(
+    self,
+    path: str,
+    handler,
+    precalls = [],
+    postcalls = [],
+  ):
+    self.endpoints.append((
+      path, handler, precalls, postcalls
+    ))
 
     return handler
 
   def get(self, request: Request):
-    for path, handler in self.endpoints:
+    for path, handler, precalls, postcalls in self.endpoints:
       if not _match_path(path, request.path).is_match:
         continue
 
       request.path_params = _match_path(path, request.path).params
 
-      return handler
+      return handler, precalls, postcalls
 
     return None
 
@@ -70,16 +78,19 @@ class Router:
   def __init__(self):
     self.epmgr = _EndpointManager()
 
-  def endpoint(self, path: str):
+  def endpoint(self, path: str, /, *, pre = None, post = None):
+    precalls = [] if pre is None else (list(pre) if isinstance(pre, (list, tuple)) else [pre])
+    postcalls = [] if post is None else (list(post) if isinstance(post, (list, tuple)) else [post])
+
     def decorator(handler):
-      return self.epmgr.add(path, handler)
+      return self.epmgr.add(path, handler, precalls, postcalls)
 
     return decorator
 
   async def process(self, request: Request) -> Response:
-    handler = self.epmgr.get(request)
+    matched = self.epmgr.get(request)
 
-    if handler is None:
+    if matched is None:
       response = Response()
       response.status(404)
       response.body(b"Not Found")
@@ -87,8 +98,16 @@ class Router:
 
       return response
 
+    handler, precalls, postcalls = matched
+
     try:
+      for middleware in precalls:
+        request = middleware(request)
+
       response = await handler(request)
+
+      for middleware in postcalls:
+        request = middleware(request)
     except Exception as e:
       response = Response()
       response.status(500)
