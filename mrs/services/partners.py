@@ -70,7 +70,12 @@ def update_account(account_id: str, data: dict) -> dict:
 
   payload = {
     **current,
-    **{key: value for key, value in data.items() if key in allowed and value is not None},
+    **{
+      key: value
+
+      for key, value in data.items()
+      if key in allowed and value is not None
+    },
     "updated_at": _now(),
   }
 
@@ -98,7 +103,10 @@ def get_inventory(partner_id: str) -> list[dict]:
     "partner_id": Query("eq", partner_id),
   }, [])
 
-def set_inventory_items(partner_id: str, items: list[dict]) -> list[dict]:
+def set_inventory_items(
+  partner_id: str,
+  items: list[dict],
+) -> list[dict]:
   table = repository.access("inventory")
   updated = []
 
@@ -122,7 +130,12 @@ def set_inventory_items(partner_id: str, items: list[dict]) -> list[dict]:
       "partner_id": partner_id,
       "medicine_id": medicine_id,
       "quantity": int(quantity),
-      "price": float(item["price"]) if item.get("price") is not None else 0.0,
+      "price": (
+        float(item["price"])
+
+        if item.get("price") is not None
+        else 0.0
+      ),
     }
 
     if inventory_id is not None:

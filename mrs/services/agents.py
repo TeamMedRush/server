@@ -33,7 +33,12 @@ def update_account(account_id: str, data: dict) -> dict:
   allowed = {"name", "email", "phone", "age"}
   payload = {
     **current,
-    **{key: value for key, value in data.items() if key in allowed and value is not None},
+    **{
+      key: value
+
+      for key, value in data.items()
+      if key in allowed and value is not None
+    },
     "updated_at": _now(),
   }
 

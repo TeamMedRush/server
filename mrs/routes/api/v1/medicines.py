@@ -18,3 +18,4 @@ async def medicines(request: Request) -> Response:
     return response.json(200, {"medicines": medicines})
 
   return response.json(405, {"error": "Method Not Allowed"})
+

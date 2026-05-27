@@ -21,6 +21,7 @@ async def auth_signup(request: Request) -> Response:
       data["password"],
       data,
     )
+
   except ValueError as error:
     return response.json(400, {"error": str(error)})
   except PermissionError as error:
@@ -49,6 +50,7 @@ async def auth_signin(request: Request) -> Response:
       data["email"],
       data["password"],
     )
+
   except ValueError as error:
     return response.json(400, {"error": str(error)})
   except PermissionError as error:
@@ -61,3 +63,4 @@ async def auth_signin(request: Request) -> Response:
     "persona": result["auth"]["persona"],
     "profile": result["profile"],
   })
+

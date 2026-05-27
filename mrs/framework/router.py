@@ -110,3 +110,4 @@ class Router:
         request = middleware(request)
 
     return response
+

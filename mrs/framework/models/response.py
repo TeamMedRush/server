@@ -41,9 +41,21 @@ class Response:
       500: "Internal Server Error",
     }
 
-    status = "HTTP/1.1 " + str(self._status_code) + " " + reasons.get(self._status_code, "OK") + "\r\n"
+    status = (
+      "HTTP/1.1 "
+      + str(self._status_code)
+      + " "
+      + reasons.get(self._status_code, "OK")
+      + "\r\n"
+    )
+
     content_type = "Content-Type: " + self._content_type + "\r\n"
-    content_length = "Content-Length: " + str(len(self._body)) + "\r\n"
+    content_length = (
+      "Content-Length: "
+      + str(len(self._body))
+      + "\r\n"
+    )
+
     connection = "Connection: close\r\n"
     body = b"\r\n" + self._body
 

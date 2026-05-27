@@ -26,7 +26,10 @@ async def get_static_asset(request: Request) -> Response:
       response.content_type("application/javascript")
     elif resource_path.endswith(".png"):
       response.content_type("image/png")
-    elif resource_path.endswith(".jpg") or resource_path.endswith(".jpeg"):
+    elif (
+      resource_path.endswith(".jpg")
+      or resource_path.endswith(".jpeg")
+    ):
       response.content_type("image/jpeg")
     else:
       response.content_type("application/octet-stream")

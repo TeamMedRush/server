@@ -59,13 +59,19 @@ class Table:
     unknown_cols = set(data) - set(self.cols)
 
     if unknown_cols:
-      raise KeyError(f"Unknown column(s) for {self.name}: {', '.join(sorted(unknown_cols))}")
+      columns = ", ".join(sorted(unknown_cols))
+
+      raise KeyError(
+        f"Unknown column(s) for {self.name}: {columns}"
+      )
 
     for col, value in data.items():
       expected_type = self.cols[col]
 
       if value is not None and not isinstance(value, expected_type):
-        raise TypeError(f"{self.name}.{col} must be {expected_type.__name__}")
+        raise TypeError(
+          f"{self.name}.{col} must be {expected_type.__name__}"
+        )
 
   def _match(self, row: dict, query: dict[str, Query]) -> bool:
     for col, condition in query.items():
@@ -106,7 +112,11 @@ class Table:
         results.append(deepcopy(row))
         continue
 
-      results.append({field: deepcopy(row.get(field)) for field in fields})
+      results.append({
+        field: deepcopy(row.get(field))
+
+        for field in fields
+      })
 
     return results
 

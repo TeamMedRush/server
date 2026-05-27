@@ -18,7 +18,11 @@ def analyse_headers(header_text: str) -> dict:
   return headers
 
 @autosig
-def analyse_request(addr: tuple, headers: dict, body: bytes) -> Request:
+def analyse_request(
+  addr: tuple,
+  headers: dict,
+  body: bytes,
+) -> Request:
   method, path, version = headers["other"][0].split(" ")
 
   return Request(addr, method, path, version, headers, body)

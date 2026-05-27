@@ -1,7 +1,6 @@
 from mrs.framework.models.request import Request
 from mrs.framework.models.response import Response
 from mrs.framework.router import Router
-from mrs.middleware.auth import auth as auth_middleware
 from mrs.routes.api._helpers import auth_payload, json_body
 from mrs.routes.api._helpers import require_fields
 from mrs.services.agents import accept_order
@@ -10,11 +9,14 @@ from mrs.services.auth import resolve_credentials
 from mrs.services.auth import sign_up
 from mrs.services.auth import update_account
 
+from mrs.middleware.auth import auth as auth_middleware
+
 @Router.endpoint(
   "/api/v1/agent/account",
   pre=[auth_middleware],
   post=[],
 )
+
 async def agent_account(request: Request) -> Response:
   response = Response()
 
@@ -28,6 +30,7 @@ async def agent_account(request: Request) -> Response:
         data["password"],
         data,
       )
+
     except ValueError as error:
       return response.json(400, {"error": str(error)})
     except PermissionError as error:
@@ -47,6 +50,7 @@ async def agent_account(request: Request) -> Response:
         auth_payload(request, data),
         "agent",
       )
+
       result = update_account("agent", identity["auth"], data)
     except ValueError as error:
       return response.json(400, {"error": str(error)})
@@ -64,6 +68,7 @@ async def agent_account(request: Request) -> Response:
   pre=[auth_middleware],
   post=[],
 )
+
 async def agent_pending_orders(request: Request) -> Response:
   response = Response()
 
@@ -76,6 +81,7 @@ async def agent_pending_orders(request: Request) -> Response:
       auth_payload(request, data),
       "agent",
     )
+
     orders = pending_orders()
   except ValueError as error:
     return response.json(400, {"error": str(error)})
@@ -89,6 +95,7 @@ async def agent_pending_orders(request: Request) -> Response:
   pre=[auth_middleware],
   post=[],
 )
+
 async def agent_accept_order(request: Request) -> Response:
   response = Response()
 
@@ -101,10 +108,12 @@ async def agent_accept_order(request: Request) -> Response:
       auth_payload(request, data),
       "agent",
     )
+
     order = accept_order(
       identity["profile"]["id"],
       request.path_params["order_id"],
     )
+
   except ValueError as error:
     return response.json(400, {"error": str(error)})
   except PermissionError as error:
@@ -113,3 +122,4 @@ async def agent_accept_order(request: Request) -> Response:
     return response.json(404, {"error": str(error)})
 
   return response.json(200, {"order": order})
+

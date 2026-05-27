@@ -73,7 +73,12 @@ def update_account(account_id: str, data: dict) -> dict:
 
   payload = {
     **current,
-    **{key: value for key, value in data.items() if key in allowed and value is not None},
+    **{
+      key: value
+
+      for key, value in data.items()
+      if key in allowed and value is not None
+    },
     "updated_at": _now(),
   }
 
@@ -130,14 +135,18 @@ def book_order(user_id: str, items: list[dict]) -> dict:
     }, [])
 
     if not inventory_matches:
-      raise LookupError(f"Inventory not found for medicine: {medicine_id}")
+      raise LookupError(
+        f"Inventory not found for medicine: {medicine_id}"
+      )
 
     inventory_row = inventory_matches[0]
     price = float(inventory_row.get("price", 0.0) or 0.0)
     available = int(inventory_row.get("quantity", 0) or 0)
 
     if available < quantity:
-      raise LookupError(f"Insufficient inventory for medicine: {medicine_id}")
+      raise LookupError(
+        f"Insufficient inventory for medicine: {medicine_id}"
+      )
 
     total += price * quantity
     normalized_items.append({

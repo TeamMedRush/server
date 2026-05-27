@@ -74,7 +74,12 @@ def _profile(persona: str, profile_id: str):
 
   return repository.access(table).get(profile_id)
 
-def sign_up(persona: str, email: str, password: str, data: dict) -> dict:
+def sign_up(
+  persona: str,
+  email: str,
+  password: str,
+  data: dict,
+) -> dict:
   persona = normalize_persona(persona)
 
   if _find_auth_by_email(email) is not None:
@@ -137,13 +142,19 @@ def authenticate(persona: str, email: str, password: str) -> dict:
     "profile": profile,
   }
 
-def authenticate_token(token: str, persona: str | None = None) -> dict:
+def authenticate_token(
+  token: str,
+  persona: str | None = None,
+) -> dict:
   auth = _find_auth_by_token(token)
 
   if auth is None:
     raise PermissionError("Invalid credentials")
 
-  if persona is not None and normalize_persona(persona) != auth["persona"]:
+  if (
+    persona is not None
+    and normalize_persona(persona) != auth["persona"]
+  ):
     raise PermissionError("Invalid credentials")
 
   profile = _profile(auth["persona"], auth["profile_id"])
@@ -153,7 +164,10 @@ def authenticate_token(token: str, persona: str | None = None) -> dict:
     "profile": profile,
   }
 
-def resolve_credentials(payload: dict, persona: str | None = None) -> dict:
+def resolve_credentials(
+  payload: dict,
+  persona: str | None = None,
+) -> dict:
   token = payload.get("token")
 
   if token:
