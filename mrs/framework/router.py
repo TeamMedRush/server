@@ -76,7 +76,7 @@ class Router:
   def __init__(self):
     self.epmgr = _EndpointManager()
 
-  def endpoint(self, path: str, /, *, pre, post):
+  def endpoint(self, path: str, /, *, pre=[], post=[]):
     def decorator(handler):
       return self.epmgr.add(path, handler, pre, post)
 
