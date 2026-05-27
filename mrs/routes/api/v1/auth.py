@@ -2,9 +2,10 @@ from mrs.framework.models.request import Request
 from mrs.framework.models.response import Response
 from mrs.framework.router import Router
 from mrs.routes.api._helpers import json_body, require_fields
-from mrs.services.auth import sign_in, sign_up
+from mrs.services.auth import sign_in
+from mrs.services.auth import sign_up
 
-@Router.endpoint("/api/v1/auth/signup")
+@Router.endpoint("/api/v1/auth/signup", pre=[], post=[])
 async def auth_signup(request: Request) -> Response:
   response = Response()
 
@@ -14,7 +15,12 @@ async def auth_signup(request: Request) -> Response:
   try:
     data = json_body(request)
     require_fields(data, ["persona", "email", "password"])
-    result = sign_up(data["persona"], data["email"], data["password"], data)
+    result = sign_up(
+      data["persona"],
+      data["email"],
+      data["password"],
+      data,
+    )
   except ValueError as error:
     return response.json(400, {"error": str(error)})
   except PermissionError as error:
@@ -28,7 +34,7 @@ async def auth_signup(request: Request) -> Response:
     "profile": result["profile"],
   })
 
-@Router.endpoint("/api/v1/auth/signin")
+@Router.endpoint("/api/v1/auth/signin", pre=[], post=[])
 async def auth_signin(request: Request) -> Response:
   response = Response()
 
@@ -38,7 +44,11 @@ async def auth_signin(request: Request) -> Response:
   try:
     data = json_body(request)
     require_fields(data, ["persona", "email", "password"])
-    result = sign_in(data["persona"], data["email"], data["password"])
+    result = sign_in(
+      data["persona"],
+      data["email"],
+      data["password"],
+    )
   except ValueError as error:
     return response.json(400, {"error": str(error)})
   except PermissionError as error:
@@ -51,4 +61,3 @@ async def auth_signin(request: Request) -> Response:
     "persona": result["auth"]["persona"],
     "profile": result["profile"],
   })
-

@@ -53,12 +53,10 @@ class _EndpointManager:
     self,
     path: str,
     handler,
-    precalls = [],
-    postcalls = [],
+    precalls,
+    postcalls,
   ):
-    self.endpoints.append((
-      path, handler, precalls, postcalls
-    ))
+    self.endpoints.append((path, handler, precalls, postcalls))
 
     return handler
 
@@ -78,12 +76,9 @@ class Router:
   def __init__(self):
     self.epmgr = _EndpointManager()
 
-  def endpoint(self, path: str, /, *, pre = None, post = None):
-    precalls = [] if pre is None else (list(pre) if isinstance(pre, (list, tuple)) else [pre])
-    postcalls = [] if post is None else (list(post) if isinstance(post, (list, tuple)) else [post])
-
+  def endpoint(self, path: str, /, *, pre, post):
     def decorator(handler):
-      return self.epmgr.add(path, handler, precalls, postcalls)
+      return self.epmgr.add(path, handler, pre, post)
 
     return decorator
 
@@ -105,14 +100,13 @@ class Router:
         request = middleware(request)
 
       response = await handler(request)
-
-      for middleware in postcalls:
-        request = middleware(request)
     except Exception as e:
       response = Response()
       response.status(500)
       response.body(f"Internal Server Error: \n{str(e)}".encode())
       response.content_type("text/plain")
+    finally:
+      for middleware in postcalls:
+        request = middleware(request)
 
     return response
-

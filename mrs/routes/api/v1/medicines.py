@@ -4,7 +4,7 @@ from mrs.framework.router import Router
 from mrs.routes.api._helpers import json_body
 from mrs.services.medicines import list_medicines
 
-@Router.endpoint("/api/v1/medicines")
+@Router.endpoint("/api/v1/medicines", pre=[], post=[])
 async def medicines(request: Request) -> Response:
   response = Response()
 
@@ -18,4 +18,3 @@ async def medicines(request: Request) -> Response:
     return response.json(200, {"medicines": medicines})
 
   return response.json(405, {"error": "Method Not Allowed"})
-
