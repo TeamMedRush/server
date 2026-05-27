@@ -1,0 +1,2 @@
+This script runs the test suite using Python's module runner (`python -m tests`).
+Any extra arguments you pass are forwarded to the tests module.
