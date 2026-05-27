@@ -1,24 +1,21 @@
-from json import loads
-
 from mrs.framework.models.request import Request
 from mrs.framework.models.response import Response
 from mrs.framework.router import Router
+from mrs.routes.api._helpers import json_body
+from mrs.services.medicines import list_medicines
 
-@Router.endpoint("/api/v1/medicines/request")
-async def request_medicine(request: Request) -> Response:
+@Router.endpoint("/api/v1/medicines")
+async def medicines(request: Request) -> Response:
   response = Response()
 
-  if request.method != "POST":
-    return response.json(405, {
-      "error": "Method Not Allowed"
-    })
+  if request.method == "GET":
+    try:
+      data = json_body(request)
+      medicines = list_medicines(data.get("search"))
+    except ValueError as error:
+      return response.json(400, {"error": str(error)})
 
-  try:
-    data = loads(request.body())
-  except Exception as _:
-    return response.json(400, {
-      "error": "Invalid JSON"
-    })
+    return response.json(200, {"medicines": medicines})
 
-  return response
+  return response.json(405, {"error": "Method Not Allowed"})
 

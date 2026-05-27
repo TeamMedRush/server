@@ -1,26 +1,82 @@
 from mrs.framework.models.request import Request
 from mrs.framework.models.response import Response
 from mrs.framework.router import Router
+from mrs.routes.api._helpers import auth_payload, json_body, require_fields
+from mrs.services.agents import accept_order, pending_orders
+from mrs.services.auth import resolve_credentials, sign_up, update_account
 
-@Router.endpoint("/api/v1/agent/delivery/open")
-async def open_delivery(request: Request) -> Response:
+@Router.endpoint("/api/v1/agent/account")
+async def agent_account(request: Request) -> Response:
   response = Response()
 
-  if "user-token" not in request.meta:
-    return response.json(401, {
-      "error": "Authentication required",
+  if request.method == "POST":
+    try:
+      data = json_body(request)
+      require_fields(data, ["email", "password"])
+      result = sign_up("agent", data["email"], data["password"], data)
+    except ValueError as error:
+      return response.json(400, {"error": str(error)})
+    except PermissionError as error:
+      return response.json(401, {"error": str(error)})
+    except LookupError as error:
+      return response.json(404, {"error": str(error)})
+
+    return response.json(201, {
+      "token": result["token"],
+      "profile": result["profile"],
     })
 
-  return response
+  if request.method in ("PATCH", "PUT"):
+    try:
+      data = json_body(request)
+      identity = resolve_credentials(auth_payload(request, data), "agent")
+      result = update_account("agent", identity["auth"], data)
+    except ValueError as error:
+      return response.json(400, {"error": str(error)})
+    except PermissionError as error:
+      return response.json(401, {"error": str(error)})
+    except LookupError as error:
+      return response.json(404, {"error": str(error)})
 
-@Router.endpoint("/api/v1/agent/delivery/:delivery_id/accept")
-async def accept_delivery(request: Request) -> Response:
+    return response.json(200, {"profile": result["profile"]})
+
+  return response.json(405, {"error": "Method Not Allowed"})
+
+@Router.endpoint("/api/v1/agent/orders/pending")
+async def agent_pending_orders(request: Request) -> Response:
   response = Response()
 
-  if "user-token" not in request.meta:
-    return response.json(401, {
-      "error": "Authentication required",
-    })
+  if request.method != "GET":
+    return response.json(405, {"error": "Method Not Allowed"})
 
-  return response
+  try:
+    data = json_body(request)
+    resolve_credentials(auth_payload(request, data), "agent")
+    orders = pending_orders()
+  except ValueError as error:
+    return response.json(400, {"error": str(error)})
+  except PermissionError as error:
+    return response.json(401, {"error": str(error)})
+
+  return response.json(200, {"orders": orders})
+
+@Router.endpoint("/api/v1/agent/orders/:order_id/accept")
+async def agent_accept_order(request: Request) -> Response:
+  response = Response()
+
+  if request.method != "POST":
+    return response.json(405, {"error": "Method Not Allowed"})
+
+  try:
+    data = json_body(request)
+    identity = resolve_credentials(auth_payload(request, data), "agent")
+    order = accept_order(identity["profile"]["id"], request.path_params["order_id"])
+  except ValueError as error:
+    return response.json(400, {"error": str(error)})
+  except PermissionError as error:
+    return response.json(401, {"error": str(error)})
+  except LookupError as error:
+    return response.json(404, {"error": str(error)})
+
+  return response.json(200, {"order": order})
 

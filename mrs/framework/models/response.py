@@ -30,7 +30,18 @@ class Response:
 
   @autosig
   def generate(self):
-    status = "HTTP/1.1 " + str(self._status_code) + " OK\r\n"
+    reasons = {
+      200: "OK",
+      201: "Created",
+      400: "Bad Request",
+      401: "Unauthorized",
+      404: "Not Found",
+      405: "Method Not Allowed",
+      409: "Conflict",
+      500: "Internal Server Error",
+    }
+
+    status = "HTTP/1.1 " + str(self._status_code) + " " + reasons.get(self._status_code, "OK") + "\r\n"
     content_type = "Content-Type: " + self._content_type + "\r\n"
     content_length = "Content-Length: " + str(len(self._body)) + "\r\n"
     connection = "Connection: close\r\n"
