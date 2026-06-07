@@ -65,8 +65,9 @@ async def _handle(reader, writer):
 async def _start_server():
   host = "0.0.0.0"
   port = 8000
+  import sys
   server = await start_server(
-    _handle, host, port, reuse_port=True
+    _handle, host, port, reuse_port=(sys.platform != "win32")
   )
 
   print(f"Active: http://{host}:{port}")

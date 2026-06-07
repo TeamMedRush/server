@@ -1,3 +1,12 @@
 **/__pycache__
 .DS_Store
-.venv
+
+# Virtual environments
+.venv/
+venv/
+
+# Python
+*.pyc
+
+# Local database
+*.db
